@@ -1,0 +1,38 @@
+{
+  "name": "meap",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/icons": "^1.0.0-beta.42",
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.2",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "fraction.js": "^4.0.8",
+    "free-google-image-search": "^1.0.0",
+    "lodash": "^4.17.5",
+    "massive": "^4.7.1",
+    "material-design-icons": "^3.0.1",
+    "material-ui": "^1.0.0-beta.40",
+    "material-ui-icons": "^1.0.0-beta.36",
+    "measuring-cup": "^1.2.0",
+    "passport": "^0.4.0",
+    "passport-auth0": "^0.6.1",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.3",
+    "redux": "^3.7.2",
+    "redux-promise-middleware": "^5.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "main": "server/index.js",
+  "proxy": "http://localhost:3003"
+}
