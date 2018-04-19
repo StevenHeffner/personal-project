@@ -5,7 +5,7 @@ const express = require("express"),
   session = require("express-session"),
   passport = require("passport"),
   Auth0Strategy = require("passport-auth0");
-  // fraction = require("fraction");
+// fraction = require("fraction");
 // con = require("./controller");
 
 const {
@@ -15,12 +15,13 @@ const {
   DOMAIN,
   CLIENT_ID,
   CLIENT_SECRET,
-  CALLBACK_URL
+  CALLBACK_URL,
+  SUCCESS_REDIRECT,
+  FAILURE_REDIRECT
 } = process.env;
 
 const app = express();
-
-
+app.use(express.static(`${__dirname}/../build`));
 
 app.use(bodyParser.json());
 
@@ -85,8 +86,8 @@ app.get("/auth", passport.authenticate("auth0"));
 app.get(
   "/auth/callback",
   passport.authenticate("auth0", {
-    successRedirect: "http://localhost:3000/#/meal-plan",
-    failureRedirect: "http://localhost:3000/#/"
+    successRedirect: SUCCESS_REDIRECT,
+    failureRedirect: FAILURE_REDIRECT
   })
 );
 
@@ -125,7 +126,7 @@ app.get("/recipes", (req, res) => {
       }
 
       // for(let i = 0; i < recipes.length; i++){
-      //   var x = 
+      //   var x =
       // }
       // console.log(recipes)
       // recipes[0].ingredients = resolvedArray[0]
@@ -137,7 +138,7 @@ app.get("/recipes", (req, res) => {
 
 app.post("/recipes", async (req, res) => {
   const db = app.get("db");
-  const { recipeName, ingredients, recipeImg }= req.body;
+  const { recipeName, ingredients, recipeImg } = req.body;
   // let ingredientId = []
   // const [recipe] = await db.find_add_recipeName([recipeName, recipeImg]);
 
@@ -158,30 +159,35 @@ app.post("/recipes", async (req, res) => {
   // const whatever = await Promise.all(makeRecipes);
 
   // res.status(200).send("Blam");
-  var quantitys = []
+  var quantitys = [];
   var ingredIds = [];
   var makeRecipe = [];
   const recipeId = await db.find_add_recipeName([recipeName, recipeImg]);
   ingredients.forEach(ingredient => {
-    quantitys.push(ingredient.quantity)
-  })
+    quantitys.push(ingredient.quantity);
+  });
 
   ingredients.forEach(ingredient => {
     ingredIds.push(
-      db.find_add_ingredient([ingredient.item, ingredient.measurement, ingredient.img])
+      db.find_add_ingredient([
+        ingredient.item,
+        ingredient.measurement,
+        ingredient.img
+      ])
     );
   });
 
-  Promise.all(ingredIds).then(async(resolvedIngredIds) => {
-   await resolvedIngredIds.map((resolvedId, i) => {
-      makeRecipe.push(db.add_make_recipe([recipeId[0].id, resolvedId[0].id, quantitys[i]]))
-    })
-    
-    Promise.all(makeRecipe).then(res.status(200).send("Blam"))
-  });
-  
+  Promise.all(ingredIds).then(async resolvedIngredIds => {
+    await resolvedIngredIds.map((resolvedId, i) => {
+      makeRecipe.push(
+        db.add_make_recipe([recipeId[0].id, resolvedId[0].id, quantitys[i]])
+      );
+    });
 
-      // await ingredients
+    Promise.all(makeRecipe).then(res.status(200).send("Blam"));
+  });
+
+  // await ingredients
   //   .map(async function(ingredient) {
   //     let resIngredientId = await db.find_add_ingredient([
   //       ingredient.item,
@@ -206,17 +212,18 @@ app.post("/recipes", async (req, res) => {
   // res.status(200).send("Blam");
 });
 
-app.delete('/recipes/:id', async (req, res) => {
- const db = app.get("db");
- db.delete_recipe([req.params.id]).then(() => res.status(200).send('done'))
-  
-})
+app.delete("/recipes/:id", async (req, res) => {
+  const db = app.get("db");
+  db.delete_recipe([req.params.id]).then(() => res.status(200).send("done"));
+});
 
 // app.get('/recipe', async (req, res) => {
 //   const db = app.get("db");
 
 // })
-
+app.get('*', (req, res)=>{
+  res.sendFile(path.join(__dirname, '../build/index.html'));
+});
 
 app.listen(SERVER_PORT, () => {
   console.log(`${SERVER_PORT} Puppers Ready To Bork`);

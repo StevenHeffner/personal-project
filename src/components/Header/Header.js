@@ -37,7 +37,6 @@ class Header extends Component {
         <img className = "logo" src={logo} alt="logo"/>
         <div className = "menu-tab">
         <IconButton
-          // color= "secondary[light]"
           aria-label="More"
           aria-owns={anchorEl ? 'long-menu' : null}
           aria-haspopup="true"
@@ -60,15 +59,12 @@ class Header extends Component {
         >
           {options.map(option => (
             <MenuItem key={option}  onClick={this.handleClose}>
-            <a href="http://localhost:3003/auth/logout" className="removeline">  {option}</a>
+            <a href={process.env.REACT_APP_LOGOUT} className="removeline">  {option}</a>
             </MenuItem> 
           ))}
         </Menu>
 
           <p className = 'greet'>Hello, {this.props.user.display_name}</p>
-          {/* <a href="http://localhost:3003/auth/logout">
-            <button className="">Logout</button> */}
-          {/* </a> */}
         </div>
       </div>
     );
