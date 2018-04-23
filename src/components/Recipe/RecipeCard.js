@@ -6,13 +6,20 @@ import { withStyles } from "material-ui/styles";
 import Button from "material-ui/Button";
 import { getAllRecipes } from "../../ducks/reducer";
 import { connect } from "react-redux";
+import Icon from "material-ui/Icon";
+import MenuItem from "material-ui/Menu/MenuItem";
+import TextField from "material-ui/TextField";
+import Fraction from "fraction.js";
+
 import Dialog, {
   DialogActions,
   DialogContent,
-  DialogTitle
+  DialogTitle,
+  DialogContentText
 } from "material-ui/Dialog";
 import Slide from "material-ui/transitions/Slide";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { List } from "material-ui";
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
@@ -27,8 +34,23 @@ const styles = theme => ({
     fontSize: "16px",
     boxShadow: "none"
   },
+  popupButton: {
+    textTransform: "none",
+    fontSize: "17px"
+  },
+  editButton: {
+    marginRight: "15px"
+  },
   dialog: {
     width: 600
+  },
+  textField: {
+    width: "200px",
+    marginTop: "21px"
+  },
+  dialogActions: {
+    alignItems: "flex-start",
+    margin: "10px 4px"
   }
 });
 
@@ -37,13 +59,47 @@ class RecipeCard extends Component {
     super();
 
     this.state = {
-      open: false
+      open: false,
+      openEdit: false,
+      nameEdit: "",
+      updatedRecipe: []
     };
+    this.updateRecipe = this.updateRecipe.bind(this);
   }
+  updateRecipe() {
+    axios.post("/recipes/edit", this.state);
+    this.handleCloseEdit();
+  }
+
+  handleUpdateChange = key => event => {
+    let updatedRecipe = [...this.props.recipe.ingredients];
+    if (event.target.name === "quantity") {
+      updatedRecipe[key].quantity = +event.target.value;
+    }
+    this.setState({
+      updatedRecipe
+    });
+    console.log(updatedRecipe);
+    // console.log("edit list", [key][event.target.quantity]);
+  };
 
   deleteRecipe(id) {
     axios.delete(`recipes/${id}`).then(() => this.props.getAllRecipes());
   }
+
+  handleNameEdit(e) {
+    this.setState({
+      nameEdit: e.target.value
+    });
+  }
+
+  handleClickOpenEdit = () => {
+    this.setState({ openEdit: true });
+  };
+
+  handleCloseEdit = () => {
+    this.setState({ openEdit: false });
+  };
 
   handleClickOpen = () => {
     this.setState({ open: true });
@@ -56,6 +112,7 @@ class RecipeCard extends Component {
   render() {
     const { classes } = this.props;
     const { id, name, ingredients, img } = this.props.recipe;
+
     // console.log('HELLER:',ingredients)
     // let ingredientsJSX = ingredients.map((ingredient, i) => {
     //   return (
@@ -69,7 +126,18 @@ class RecipeCard extends Component {
     // });
     return (
       <div className="card">
-        <img className="img" src={img} />
+        {/* <img className="img" src={img} /> */}
+        <div
+          style={{
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            flexGrow: 1,
+            width: "100%",
+            backgroundColor: "red",
+            backgroundImage: `url(${img})`
+          }}
+        />
         <div className="cardTitle">{name}</div>
         <Button
           onClick={this.handleClickOpen}
@@ -90,19 +158,30 @@ class RecipeCard extends Component {
           <DialogTitle>
             <div className="dialog-title">
               {name}
-              <Button
-                onClick={() => this.deleteRecipe(this.props.recipe.id)}
-                variant="fab"
-                aria-label="delete"
-                color="primary"
-                className={classes.deleteButton}
-              >
-                <DeleteIcon />
-              </Button>
+              <div className="card_buttons">
+                <Button
+                  onClick={this.handleClickOpenEdit}
+                  variant="fab"
+                  aria-label="delete"
+                  color="primary"
+                  className={classes.editButton}
+                >
+                  <Icon>edit_icon</Icon>
+                </Button>
+                <Button
+                  onClick={() => this.deleteRecipe(this.props.recipe.id)}
+                  variant="fab"
+                  aria-label="delete"
+                  color="primary"
+                  className={classes.deleteButton}
+                >
+                  <DeleteIcon />
+                </Button>
+              </div>
             </div>
           </DialogTitle>
           <DialogContent className={classes.dialog}>
-            <div className='ingredients-card-container'>
+            <div className="ingredients-card-container">
               {ingredients.map((ingredient, key) => {
                 return (
                   <IngredientsCard
@@ -114,11 +193,91 @@ class RecipeCard extends Component {
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Disagree
+            <Button className={classes.popupButton} onClick={this.handleClose} color="primary">
+              Close
             </Button>
-            <Button onClick={this.handleClose} color="primary">
-              Agree
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={this.state.openEdit}
+          onClose={this.handleCloseEdit}
+          aria-labelledby="form-dialog-title"
+        >
+          <div className="pop-header">
+            <DialogTitle id="form-dialog-title">Edit Recipe</DialogTitle>
+          </div>
+          <DialogContent className={classes.dialogContent}>
+            <DialogContentText>What would you like to edit?</DialogContentText>
+            <TextField
+              onChange={e => this.handleNameEdit(e)}
+              id="recipie-name"
+              value={name}
+              margin="dense"
+              label="Recipe Name"
+              // defaultValue= {name}
+              // value={name}
+              fullWidth
+            />
+
+            {ingredients.map((ingredient, i) => {
+              // let x = new Fraction(ingredient.quantity);
+              // let res = x.toFraction(true);
+              // console.log('key', i)
+              return (
+                <div className="input" key={i}>
+                  <TextField
+                    // onChange={this.handleUpdate(i)}
+
+                    value={ingredient.item}
+                    style={{ marginTop: "8px" }}
+                    name="item"
+                    margin="dense"
+                    id={"itemid" + i}
+                    type="text"
+                    label="Item"
+                    fullWidth
+                  />
+                  <TextField
+                    onChange={this.handleUpdateChange(i)}
+                    defaultValue={ingredient.quantity}
+                    style={{ marginTop: "8px" }}
+                    name="quantity"
+                    id={"quantityid" + i}
+                    margin="dense"
+                    label="Quantity"
+                    fullWidth
+                    type="number"
+                  />
+                  <TextField
+                    // style={{marginTop:"5px"}}
+                    id="select-measurement"
+                    value={ingredient.measurement}
+                    label="Measurment"
+                    name="measurement"
+                    className={classes.textField}
+                    style={{ marginTop: "5px" }}
+                    // onChange={this.handleChange2(i)}
+                  />
+                </div>
+              );
+            })}
+          </DialogContent>
+          <DialogActions className={classes.dialogActions}>
+            <Button
+              onClick={this.handleCloseEdit}
+              color="primary"
+              className={classes.popupButton}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={this.updateRecipe}
+              className={classes.popupButton}
+              // onClick={this.handleAddRecipe}
+              color="primary"
+            >
+              Save
             </Button>
           </DialogActions>
         </Dialog>

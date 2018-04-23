@@ -9,6 +9,7 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/Menu/MenuItem";
 import { connect } from "react-redux";
 import { getAllRecipes } from "../../ducks/reducer";
+// import Fraction from "fraction"
 
 import Dialog, {
   DialogActions,
@@ -99,9 +100,8 @@ class Recipe extends Component {
     });
   }
   async getIngredPics() {
-    const that = this;
-    return new Promise(async function(resolve, reject) {
-      let currentIngredients = [...that.state.currentList];
+    return new Promise(async (resolve, reject) => {
+      let currentIngredients = [...this.state.currentList];
       const promises = [];
       currentIngredients.forEach(ingredient => {
         promises.push(
@@ -121,10 +121,11 @@ class Recipe extends Component {
         console.log("with image:", currentIngredients);
       });
       const resolved = await Promise.all(promises);
-      resolved.forEach((response, i) => { 
+      resolved.forEach((response, i) => {
         currentIngredients[i].img = response.data.common[0].photo.thumb;
+        currentIngredients[i].quantity = eval(currentIngredients[i].quantity);
       });
-      that.setState(
+      this.setState(
         {
           currentList: currentIngredients
         },
@@ -142,7 +143,7 @@ class Recipe extends Component {
     if (result[0]) {
       this.handleClose();
     } else {
-      await this.getPic(this.state.recipeName);
+      this.getPic(this.state.recipeName);
       await this.getIngredPics();
       const newRecipe = [];
       newRecipe.push({

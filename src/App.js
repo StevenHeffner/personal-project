@@ -8,11 +8,11 @@ import { withRouter } from "react-router-dom";
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <div className="App" style ={{height: "100%"}}>
         {this.props.location.pathname !== "/" ? <Header /> : null}
         <div className = "main-container">
           {this.props.location.pathname !== "/" ? <Nav /> : null}
-          {routes}
+        {routes}
         </div>
       </div>
     );

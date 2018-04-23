@@ -14,7 +14,7 @@ import Cart from './img/ic_local_grocery_store_black_24px.png'
 const styles = theme => ({
   menuItem: {
     '&:focus': {
-      backgroundColor: '#F6414A',
+      backgroundColor: '#C4C4C4',
       '& $primary, & $icon': {
         color: theme.palette.common.white,
       },
@@ -40,7 +40,7 @@ const styles = theme => ({
 function Nav (props) {
   const { classes } = props;
    return (
-       <Paper style = {{height: '100vh', width: '300px', paddingTop: '20px'}}>
+       <Paper style = {{width: '220px', paddingTop: '20px', flexShrink: '0', height: '100%'}}>
       <MenuList>
       <Link to ='recipes' className="removeline"><MenuItem className={classes.menuItem}>
           <ListItemIcon className={classes.icon}>

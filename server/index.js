@@ -5,6 +5,7 @@ const express = require("express"),
   session = require("express-session"),
   passport = require("passport"),
   Auth0Strategy = require("passport-auth0");
+  path = require('path')
 // fraction = require("fraction");
 // con = require("./controller");
 
@@ -216,6 +217,19 @@ app.delete("/recipes/:id", async (req, res) => {
   const db = app.get("db");
   db.delete_recipe([req.params.id]).then(() => res.status(200).send("done"));
 });
+
+app.post("/recipes/edit", (req, res) => {
+let {make_recipe_recipe_id, make_recipe_id, ingredients_id, quantity} = req.body.updatedRecipe
+const db = app.get("db");
+req.body.updatedRecipe.forEach(ingredient => {
+  db.update_quantity([ingredient.quantity,ingredient.make_recipe_recipe_id, ingredient.make_recipe_id])
+})
+
+
+res.status(200).send('Completed')
+
+
+})
 
 // app.get('/recipe', async (req, res) => {
 //   const db = app.get("db");

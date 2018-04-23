@@ -33,7 +33,7 @@ class Plan extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <div>
+      <div style={{overflowY: 'auto', width: '100%'}}> 
         <div className="title">
           <p>Meal Plan</p>
           <Button

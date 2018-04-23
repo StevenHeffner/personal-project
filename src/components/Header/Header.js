@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { getUserInfo } from "../../ducks/reducer";
-import logo from './MEAP.png'
 import IconButton from 'material-ui/IconButton';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
+import Logo from "./MEAP2w01svg.svg";
+
 // import {Link} from 'react-router-dom'
 
 const options = [
@@ -34,7 +35,7 @@ class Header extends Component {
     const { anchorEl } = this.state;
     return (
       <div className="header">
-        <img className = "logo" src={logo} alt="logo"/>
+        <img className = "logo" src={Logo} alt="logo"/>
         <div className = "menu-tab">
         <IconButton
           aria-label="More"
