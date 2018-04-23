@@ -3,8 +3,14 @@ import _ from "lodash";
 import Button from "material-ui/Button";
 import TextField from "material-ui/TextField";
 import { connect } from "react-redux";
-import { numOfMealPlans, getAllRecipes, updateMealPlan } from "../../ducks/reducer";
+import {
+  numOfMealPlans,
+  getAllRecipes,
+  updateMealPlan
+} from "../../ducks/reducer";
 import RecipeCard from "../Recipe/RecipeCard";
+import PlanFiller from "./PlanFiller";
+
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -16,7 +22,7 @@ class PlanDialog extends Component {
   constructor() {
     super();
     this.state = {
-      num: null,
+      num: null
     };
   }
 
@@ -32,7 +38,7 @@ class PlanDialog extends Component {
   generateMealPlan() {
     let randomElements = _.sampleSize(this.props.recipes, this.state.num);
 
-    this.props.updateMealPlan(randomElements)
+    this.props.updateMealPlan(randomElements);
 
     this.props.handleClose();
   }
@@ -75,13 +81,15 @@ class PlanDialog extends Component {
             </Button>
           </DialogActions>
         </Dialog>
-        <div className="displayrec">
-          {this.props.mealPlan[0]
-            ? this.props.mealPlan.map((recipe, key) => {
-                return <RecipeCard key={recipe.id} recipe={recipe} />;
-              })
-            : null}
-        </div>
+        {this.props.mealPlan[0] ? (
+          <div className="displayrec">
+            {this.props.mealPlan.map((recipe, key) => {
+              return <RecipeCard key={recipe.id} recipe={recipe} />;
+            })}
+          </div>
+        ) : (
+          <PlanFiller />
+        )}
       </div>
     );
   }
@@ -93,6 +101,8 @@ function mapStateToProps(state) {
     mealPlan: state.mealPlan
   };
 }
-export default connect(mapStateToProps, { numOfMealPlans, getAllRecipes, updateMealPlan })(
-  PlanDialog
-);
+export default connect(mapStateToProps, {
+  numOfMealPlans,
+  getAllRecipes,
+  updateMealPlan
+})(PlanDialog);

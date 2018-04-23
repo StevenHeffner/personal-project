@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import IngredientsCard from "../Recipe/IngredientCard";
 import _ from "lodash";
+import PlanFiller from '../Plan/PlanFiller'
 
 // const flatMap = (arr) =>
 
@@ -79,13 +80,13 @@ class List extends Component {
     // console.log("Shopping List Final:", shoppingListFinal);
 
     return (
-      <div style={{overflowY: 'auto'}}>
+      <div style={{overflowY: 'auto', width: '100%'}}>
         <div>
           <p className="title">Grocery List</p>
         </div>
+          {shoppingList[0] ? 
         <div className="displaylist" style = {{}}>
-          {shoppingList[0]
-            ? shoppingList.map((ingredient, i) => {
+               {shoppingList.map((ingredient, i) => {
                 return (
                   <IngredientsCard
                     key={ingredient.ingredient_id}
@@ -93,9 +94,9 @@ class List extends Component {
                     style={{borderRight: '1px solid #e5e5e5', borderLeft: '1px solid #e5e5e5'}}
                   />
                 );
-              })
-            : null}
+              })}
         </div>
+              : <PlanFiller/>}
       </div>
     );
   }
