@@ -102,7 +102,7 @@ app.get("/auth/me", (req, res) => {
 
 app.get("/auth/logout", (req, res) => {
   req.logOut();
-  res.redirect("http://localhost:3000/");
+  res.redirect(FAILURE_REDIRECT);
 });
 
 app.get("/recipes", (req, res) => {
